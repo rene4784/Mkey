@@ -205,7 +205,11 @@ output.value += cleanedNote + " ";
 });
 
 key.addEventListener("pointerup", () => {
-// Stop the oscillator and remove active class
+oscillator.stop();
+key.classList.remove("active");
+});
+
+key.addEventListener('pointerleave', function() {
 oscillator.stop();
 key.classList.remove("active");
 });
