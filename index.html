@@ -108,7 +108,6 @@
 
   <textarea id="output"></textarea>
 <script>
-// Create a map of notes to frequencies
 const notes = {
 C: 261.63,
 "C#": 277.18,
@@ -177,8 +176,13 @@ key.classList.add("active");
 // Check if the note has a sharp or flat and add the selected symbol
 // Remove any existing sharp or flat symbols from the note
 const cleanedNote = note.replace("#", "").replace("+", "").replace("-", "");
+if (note.includes("#") || note.includes("+") || note.includes("-")) {
 output.value += cleanedNote + symbol + " ";
+} else {
+output.value += cleanedNote + " ";
+}
 });
+
 key.addEventListener("touchend", () => {
 // Stop the oscillator and remove active class
 oscillator.stop();
@@ -214,8 +218,13 @@ key.classList.add("active");
 // Check if the note has a sharp or flat and add the selected symbol
 // Remove any existing sharp or flat symbols from the note
 const cleanedNote = note.replace("#", "").replace("+", "").replace("-", "");
+if (note.includes("#") || note.includes("+") || note.includes("-")) {
 output.value += cleanedNote + symbol + " ";
+} else {
+output.value += cleanedNote + " ";
+}
 });
+
 key.addEventListener("mouseup", () => {
 // Stop the oscillator and remove active class
 oscillator.stop();
