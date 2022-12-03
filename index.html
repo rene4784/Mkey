@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MKey</title>
+<svg viewBox="0 0 100 100" width="50" height="50" style="float: left; margin-right: 10px;">
+  <path d="M10,10 L40,40 L90,10 L70,50 L40,30 L10,50 Z" fill="#9C27B0" />
+</svg>
+  <style>
+  head {
+    margin-top: -10px;
+  }
+  /* Add some margin and padding to the page */
+  body {
+    margin: 30px;
+    padding: 20px;
+  }
+  /* Make the logo bigger and center it on the page */
+  svg {
+    width: 150px;
+    height: 150px;
+    display: block;
+    margin: 0 auto;
+  }
+  /* Other CSS styles */
+/* CSS for music keys and textarea */
+.keyboard {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.key {
+  flex: 1 1 12.5%;
+  height: 200px;
+  margin: 10px;
+  text-align: center;
+   line-height: 100px; 
+  font-size: 24px;
+  cursor: pointer;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  color: #333;
+  background-color: white;
+    user-select: none; 
+}
+.key.active {
+  background-color: #999;
+}
+.key.sharp {
+  background-color: #333;
+  color: inherit;
+}
+  textarea {
+    width: 100%;
+    height: 100px;
+    margin: 10px auto 0;
+    background-color: white;
+    border: 1px solid #CCC;
+    color: #333;
+    font-size: 14px;
+  }
+  /* Add some padding and a border to the footer */
+  footer {
+    padding: 20px;
+    border-top: 1px solid #CCC;
+    margin-top: 20px;
+  }
+  /* Style the footer text */
+  footer p {
+    margin: 0;
+    color: #333;
+    font-size: 14px;
+  }
+  /* Style the footer links */
+  footer a {
+    color: #9C27B0;
+    text-decoration: none;
+  }
+  </style>
+</head>
+<body>
+  <h1>Mkey by Rene</h1>
+<!-- Music keys and textarea -->
+<div class="keyboard">
+  <div class="key" data-note="C">C<br>ド</div>
+  <div class="key sharp" data-note="C#">C#<br>ド♯</div>
+  <div class="key" data-note="D">D<br>レ</div>
+  <div class="key sharp" data-note="D#">D#<br>レ♯</div>
+  <div class="key" data-note="E">E<br>ミ</div>
+  <div class="key" data-note="F">F<br>ファ</div>
+  <div class="key sharp" data-note="F#">F#<br>ファ♯</div>
+  <div class="key" data-note="G">G<br>ソ</div>
+  <div class="key sharp" data-note="G#">G#<br>ソ♯</div>
+  <div class="key" data-note="A">A<br>ラ</div>
+  <div class="key sharp" data-note="A#">A#<br>ラ♯</div>
+  <div class="key" data-note="B">B<br>シ</div>
+</div>
+
+  <textarea id="output"></textarea>
+  <script>
+    // Create a map of notes to frequencies
+    const notes = {
+      C: 261.63,
+      "C#": 277.18,
+      D: 293.66,
+      "D#": 311.13,
+      E: 329.63,
+      F: 349.23,
+      "F#": 369.99,
+      G: 392.00,
+      "G#": 415.30,
+      A: 440.00,
+      "A#": 466.16,
+      B: 493.88
+    };
+// Get all music keys and the output textarea
+const keys = document.querySelectorAll(".key");
+const output = document.getElementById("output");
+// Add click event listener
+keys.forEach(key => {
+let oscillator;
+
+key.addEventListener("mousedown", () => {
+// Get the data-note attribute value
+const note = key.getAttribute("data-note");
+// Create an audio context and oscillator
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+oscillator = audioCtx.createOscillator();
+
+// Set the type and frequency of the oscillator
+oscillator.type = "square";
+oscillator.frequency.value = notes[note];
+
+// Connect the oscillator to the audio context destination
+oscillator.connect(audioCtx.destination);
+// Start the oscillator and play the note
+oscillator.start();
+key.classList.add("active");
+// Add the note to the output textarea
+output.value += note + " ";
+});
+key.addEventListener("mouseup", () => {
+// Stop the oscillator and remove active class
+oscillator.stop();
+key.classList.remove("active");
+});
+key.addEventListener("mouseleave", () => {
+// Stop the oscillator and remove active class
+oscillator.stop();
+key.classList.remove("active");
+});
+});
+</script>
+</body>
+<footer>
+  <p>Copyright 2022 Mkey</p>
+  <p>Created by ChatGPT & Rene</p>
+  <p>Website: <a href="https://dic.nicovideo.jp/u/47846566">Nicopedia</a></p>
+  <p><!--Terms of Service | Privacy Policy--></p>
+</footer>
+</html>
