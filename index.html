@@ -6,6 +6,9 @@
   <path d="M10,10 L40,40 L90,10 L70,50 L40,30 L10,50 Z" fill="#9C27B0" />
 </svg>
   <style>
+  head {
+    margin-top: -10px;
+  }
   /* Add some margin and padding to the page */
   body {
     margin: 30px;
@@ -22,35 +25,31 @@
 /* CSS for music keys and textarea */
 .keyboard {
   display: flex;
-  flex-wrap: wrap;
+  justify-content: center;
   width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
+  max-width: 900px;
 }
-.key, .key.sharp {
-flex: 1 1 12.5%;
-height: 200px;
-margin: 10px;
-text-align: center;
-line-height: 100px;
-font-size: 24px;
-cursor: pointer;
-border-radius: 4px;
-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-color: #333;
-background-color: white;
-user-select: none;
+.key {
+  flex: 1 1 12.5%;
+  height: 300px;
+  margin: 5px;
+  text-align: center;
+  line-height: 150px;
+  font-size: 36px;
+  cursor: pointer;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  color: #333;
+  background-color: white;
+    user-select: none; 
 }
-
-.key.sharp {
-background-color: #333;
-color: inherit;
-}
-
 .key.active {
   background-color: #999;
 }
-    
+.key.sharp {
+  background-color: #333;
+  color: gray;
+}
   textarea {
     width: 100%;
     height: 100px;
@@ -77,7 +76,7 @@ color: inherit;
     color: #9C27B0;
     text-decoration: none;
   }
-      @media (max-width: 600px) {
+  @media (max-width: 600px) {
     .key {
       flex: 1 1 25%;
       font-size: 16px;
