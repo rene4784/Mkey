@@ -123,34 +123,43 @@ A: 440.00,
 B: 493.88
 };
 
+const oscillatorTypes = ['triangle', 'sine', 'square', 'sawtooth'];
+const symbolTypes = ['#', '+', '-'];
+
 // Add a select box for selecting the oscillator type
 const select = document.createElement("select");
 select.id = "oscillator-type";
-select.innerHTML = `
 
-<option value="triangle">三角波</option>
-<option value="sine">正弦波</option>
-<option value="square">矩形波</option>
-<option value="sawtooth">鋸波</option>
-`;
+oscillatorTypes.forEach(type => {
+const option = document.createElement('option');
+option.value = type;
+option.innerHTML = type;
+select.appendChild(option);
+});
+
 document.body.appendChild(select);
+
 // Add a select box for selecting the symbol type
 const selectSymbol = document.createElement("select");
 selectSymbol.id = "symbol-type";
-selectSymbol.innerHTML = `
-<option value="#">#</option>
-<option value="+">+</option>
-<option value="-">-</option>
-`;
+
+symbolTypes.forEach(type => {
+const option = document.createElement('option');
+option.value = type;
+option.innerHTML = type;
+selectSymbol.appendChild(option);
+});
+
 document.body.appendChild(selectSymbol);
+
 // Get all music keys and the output textarea
 const keys = document.querySelectorAll(".key");
 const output = document.getElementById("output");
+
 // Add click event listener
 keys.forEach(key => {
 let oscillator;
 
-// Add touch and pointer event listeners
 key.addEventListener("pointerdown", () => {
 // Get the data-note attribute value
 const note = key.getAttribute("data-note");
@@ -164,7 +173,6 @@ oscillator = audioCtx.createOscillator();
 // Set the type and frequency of the oscillator
 oscillator.type = type;
 oscillator.frequency.value = notes[note];
-
 // Connect the oscillator to the audio context destination
 oscillator.connect(audioCtx.destination);
 // Start the oscillator and play the note
@@ -174,19 +182,29 @@ key.classList.add("active");
 // Check if the note has a sharp or flat and add the selected symbol
 // Remove any existing sharp or flat symbols from the note
 const cleanedNote = note.replace("#", "").replace("+", "").replace("-", "");
-if (note.includes("#") || note.includes("+") || note.includes("-")) {
+if (note.includes("#") || note.includes("+")) {
+// If selected symbol is "-" and note has a sharp or flat,
+// convert the sharp or flat to a flat by going down a half step
+if (symbol === "-") {
+const noteTable = {
+C: "D",
+D: "E",
+E: "F",
+F: "G",
+G: "A",
+A: "B",
+B: "C"
+};
+output.value += noteTable[cleanedNote] + symbol + " ";
+} else {
 output.value += cleanedNote + symbol + " ";
+}
 } else {
 output.value += cleanedNote + " ";
 }
 });
 
 key.addEventListener("pointerup", () => {
-// Stop the oscillator and remove active class
-oscillator.stop();
-key.classList.remove("active");
-});
-key.addEventListener("pointerleave", () => {
 // Stop the oscillator and remove active class
 oscillator.stop();
 key.classList.remove("active");
