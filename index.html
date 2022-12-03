@@ -138,7 +138,6 @@ document.body.appendChild(select);
 const selectSymbol = document.createElement("select");
 selectSymbol.id = "symbol-type";
 selectSymbol.innerHTML = `
-
 <option value="#">#</option>
 <option value="+">+</option>
 <option value="-">-</option>
@@ -147,13 +146,12 @@ document.body.appendChild(selectSymbol);
 // Get all music keys and the output textarea
 const keys = document.querySelectorAll(".key");
 const output = document.getElementById("output");
-
 // Add click event listener
 keys.forEach(key => {
 let oscillator;
 
-// Add touch event listener for mobile
-key.addEventListener("touchstart", () => {
+// Add touch and pointer event listeners
+key.addEventListener("pointerdown", () => {
 // Get the data-note attribute value
 const note = key.getAttribute("data-note");
 // Get the selected oscillator type
@@ -183,54 +181,12 @@ output.value += cleanedNote + " ";
 }
 });
 
-key.addEventListener("touchend", () => {
+key.addEventListener("pointerup", () => {
 // Stop the oscillator and remove active class
 oscillator.stop();
 key.classList.remove("active");
 });
-key.addEventListener("touchleave", () => {
-// Stop the oscillator and remove active class
-oscillator.stop();
-key.classList.remove("active");
-});
-
-// Mouse event listeners for desktop
-key.addEventListener("mousedown", () => {
-// Get the data-note attribute value
-const note = key.getAttribute("data-note");
-// Get the selected oscillator type
-const type = document.getElementById("oscillator-type").value;
-// Get the selected symbol type
-const symbol = document.getElementById("symbol-type").value;
-// Create an audio context and oscillator
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-oscillator = audioCtx.createOscillator();
-// Set the type and frequency of the oscillator
-oscillator.type = type;
-oscillator.frequency.value = notes[note];
-
-// Connect the oscillator to the audio context destination
-oscillator.connect(audioCtx.destination);
-// Start the oscillator and play the note
-oscillator.start();
-key.classList.add("active");
-
-// Check if the note has a sharp or flat and add the selected symbol
-// Remove any existing sharp or flat symbols from the note
-const cleanedNote = note.replace("#", "").replace("+", "").replace("-", "");
-if (note.includes("#") || note.includes("+") || note.includes("-")) {
-output.value += cleanedNote + symbol + " ";
-} else {
-output.value += cleanedNote + " ";
-}
-});
-
-key.addEventListener("mouseup", () => {
-// Stop the oscillator and remove active class
-oscillator.stop();
-key.classList.remove("active");
-});
-key.addEventListener("mouseleave", () => {
+key.addEventListener("pointerleave", () => {
 // Stop the oscillator and remove active class
 oscillator.stop();
 key.classList.remove("active");
