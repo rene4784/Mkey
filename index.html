@@ -107,22 +107,34 @@
 </div>
 
   <textarea id="output"></textarea>
-  <script>
-    // Create a map of notes to frequencies
-    const notes = {
-      C: 261.63,
-      "C#": 277.18,
-      D: 293.66,
-      "D#": 311.13,
-      E: 329.63,
-      F: 349.23,
-      "F#": 369.99,
-      G: 392.00,
-      "G#": 415.30,
-      A: 440.00,
-      "A#": 466.16,
-      B: 493.88
-    };
+<script>
+// Create a map of notes to frequencies
+const notes = {
+C: 261.63,
+"C#": 277.18,
+D: 293.66,
+"D#": 311.13,
+E: 329.63,
+F: 349.23,
+"F#": 369.99,
+G: 392.00,
+"G#": 415.30,
+A: 440.00,
+"A#": 466.16,
+B: 493.88
+};
+
+// Add a select box for selecting the oscillator type
+const select = document.createElement("select");
+select.id = "oscillator-type";
+select.innerHTML = `
+
+<option value="triangle">三角波</option>
+<option value="sine">正弦波</option>
+<option value="square">矩形波</option>
+<option value="sawtooth">鋸波</option>
+`;
+document.body.appendChild(select);
 // Get all music keys and the output textarea
 const keys = document.querySelectorAll(".key");
 const output = document.getElementById("output");
@@ -135,12 +147,13 @@ let oscillator;
 key.addEventListener("touchstart", () => {
 // Get the data-note attribute value
 const note = key.getAttribute("data-note");
+// Get the selected oscillator type
+const type = document.getElementById("oscillator-type").value;
 // Create an audio context and oscillator
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 oscillator = audioCtx.createOscillator();
-
 // Set the type and frequency of the oscillator
-oscillator.type = "square";
+oscillator.type = type;
 oscillator.frequency.value = notes[note];
 
 // Connect the oscillator to the audio context destination
@@ -150,6 +163,7 @@ oscillator.start();
 key.classList.add("active");
 // Add the note to the output textarea
 output.value += note + " ";
+
 });
 key.addEventListener("touchend", () => {
 // Stop the oscillator and remove active class
@@ -166,14 +180,14 @@ key.classList.remove("active");
 key.addEventListener("mousedown", () => {
 // Get the data-note attribute value
 const note = key.getAttribute("data-note");
+// Get the selected oscillator type
+const type = document.getElementById("oscillator-type").value;
 // Create an audio context and oscillator
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 oscillator = audioCtx.createOscillator();
-
-// Set the type and frequency of the oscillator
-oscillator.type = "square";
+// Set the type　and frequency of the oscillator
+oscillator.type = type;
 oscillator.frequency.value = notes[note];
-
 // Connect the oscillator to the audio context destination
 oscillator.connect(audioCtx.destination);
 // Start the oscillator and play the note
@@ -181,7 +195,6 @@ oscillator.start();
 key.classList.add("active");
 // Add the note to the output textarea
 output.value += note + " ";
-
 });
 key.addEventListener("mouseup", () => {
 // Stop the oscillator and remove active class
