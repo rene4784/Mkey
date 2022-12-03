@@ -135,6 +135,16 @@ select.innerHTML = `
 <option value="sawtooth">鋸波</option>
 `;
 document.body.appendChild(select);
+// Add a select box for selecting the symbol type
+const selectSymbol = document.createElement("select");
+selectSymbol.id = "symbol-type";
+selectSymbol.innerHTML = `
+
+<option value="#">#</option>
+<option value="+">+</option>
+<option value="-">-</option>
+`;
+document.body.appendChild(selectSymbol);
 // Get all music keys and the output textarea
 const keys = document.querySelectorAll(".key");
 const output = document.getElementById("output");
@@ -149,6 +159,8 @@ key.addEventListener("touchstart", () => {
 const note = key.getAttribute("data-note");
 // Get the selected oscillator type
 const type = document.getElementById("oscillator-type").value;
+// Get the selected symbol type
+const symbol = document.getElementById("symbol-type").value;
 // Create an audio context and oscillator
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 oscillator = audioCtx.createOscillator();
@@ -161,9 +173,11 @@ oscillator.connect(audioCtx.destination);
 // Start the oscillator and play the note
 oscillator.start();
 key.classList.add("active");
-// Add the note to the output textarea
-output.value += note + " ";
 
+// Check if the note has a sharp or flat and add the selected symbol
+// Remove any existing sharp or flat symbols from the note
+const cleanedNote = note.replace("#", "").replace("+", "").replace("-", "");
+output.value += cleanedNote + symbol + " ";
 });
 key.addEventListener("touchend", () => {
 // Stop the oscillator and remove active class
@@ -182,19 +196,25 @@ key.addEventListener("mousedown", () => {
 const note = key.getAttribute("data-note");
 // Get the selected oscillator type
 const type = document.getElementById("oscillator-type").value;
+// Get the selected symbol type
+const symbol = document.getElementById("symbol-type").value;
 // Create an audio context and oscillator
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 oscillator = audioCtx.createOscillator();
-// Set the type　and frequency of the oscillator
+// Set the type and frequency of the oscillator
 oscillator.type = type;
 oscillator.frequency.value = notes[note];
+
 // Connect the oscillator to the audio context destination
 oscillator.connect(audioCtx.destination);
 // Start the oscillator and play the note
 oscillator.start();
 key.classList.add("active");
-// Add the note to the output textarea
-output.value += note + " ";
+
+// Check if the note has a sharp or flat and add the selected symbol
+// Remove any existing sharp or flat symbols from the note
+const cleanedNote = note.replace("#", "").replace("+", "").replace("-", "");
+output.value += cleanedNote + symbol + " ";
 });
 key.addEventListener("mouseup", () => {
 // Stop the oscillator and remove active class
