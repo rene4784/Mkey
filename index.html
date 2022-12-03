@@ -35,13 +35,17 @@
   margin: 5px;
   text-align: center;
   line-height: 150px;
-  font-size: 36px;
+  font-size: 24px;
   cursor: pointer;
   border-radius: 4px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   color: #333;
   background-color: white;
     user-select: none; 
+}
+.key {
+  content: attr(data-note);
+  font-size: 24px; /* 「ドレミ」表記の文字サイズ */
 }
 .key.active {
   background-color: #999;
@@ -94,7 +98,7 @@
   <div class="key sharp" data-note="D#">D#<br>レ♯</div>
   <div class="key" data-note="E">E<br>ミ</div>
   <div class="key" data-note="F">F<br>ファ</div>
-  <div class="key sharp" data-note="F#">F#<br>ファ♯</div>
+  <div class="key sharp" data-note="F#">F#<br><span style="font-size: 18px;">ファ♯</span></div>
   <div class="key" data-note="G">G<br>ソ</div>
   <div class="key sharp" data-note="G#">G#<br>ソ♯</div>
   <div class="key" data-note="A">A<br>ラ</div>
