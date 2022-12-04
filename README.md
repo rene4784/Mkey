@@ -9,7 +9,7 @@ MKeyは、クリックするるだけで音を鳴らす音楽アプリです。�
 3. 自分が作曲した曲を保存することができます。
 
 ## デモ
-![MKey Demo](demo.gif)
+[MKey Demo](https://rene4784.github.io/Mkey/)
 
 ## インストール
 このアプリケーションは、HTML、CSS、およびJavaScriptで書かれています。ローカル環境で実行するには、以下の手順を行ってください。
