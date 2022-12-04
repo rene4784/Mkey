@@ -30,5 +30,5 @@ $ open index.html
 ```
 
 ## 作者
-[Rene](https://github.com/rene4784)
-[ChatGPT](https://chat.openai.com/chat)
+- [Rene](https://github.com/rene4784)
+- [ChatGPT](https://chat.openai.com/chat)
