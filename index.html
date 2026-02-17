@@ -1,225 +1,461 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MKey</title>
-<svg viewBox="0 0 100 100" width="50" height="50" style="float: left; margin-right: 10px;">
-  <path d="M10,10 L40,40 L90,10 L70,50 L40,30 L10,50 Z" fill="#9C27B0" />
-</svg>
   <style>
-  head {
-    margin-top: -10px;
-  }
-  /* Add some margin and padding to the page */
-  body {
-    margin: 30px;
-    padding: 20px;
-  }
-  /* Make the logo bigger and center it on the page */
-  svg {
-    width: 150px;
-    height: 150px;
-    display: block;
-    margin: 0 auto;
-  }
-  /* Other CSS styles */
-/* CSS for music keys and textarea */
-.keyboard {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  max-width: 900px;
-}
-.key {
-  flex: 1 1 12.5%;
-  height: 300px;
-  margin: 5px;
-  text-align: center;
-  line-height: 150px;
-  font-size: 24px;
-  cursor: pointer;
-  border-radius: 4px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  color: #333;
-  background-color: white;
-    user-select: none; 
-}
-.key {
-  content: attr(data-note);
-  font-size: 24px; /* 「ドレミ」表記の文字サイズ */
-}
-.key.sharp {
-  background-color: #333;
-  color: gray;
-}
-.key.active {
-  background-color: #999;
-}
-  textarea {
-    width: 100%;
-    height: 100px;
-    margin: 10px auto 0;
-    background-color: white;
-    border: 1px solid #CCC;
-    color: #333;
-    font-size: 14px;
-  }
-  /* Add some padding and a border to the footer */
-  footer {
-    padding: 20px;
-    border-top: 1px solid #CCC;
-    margin-top: 20px;
-  }
-  /* Style the footer text */
-  footer p {
-    margin: 0;
-    color: #333;
-    font-size: 14px;
-  }
-  /* Style the footer links */
-  footer a {
-    color: #9C27B0;
-    text-decoration: none;
-  }
-  @media (max-width: 600px) {
-    .key {
-      flex: 1 1 25%;
-      font-size: 16px;
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: sans-serif;
+      text-align: center;
+      background-color: #f9f9f9;
+      min-height: 100vh;
+      position: relative;
     }
-  }
+
+    /* MIDI Controls - Positioned unobtrusively at top right */
+    .midi-config {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+      z-index: 100;
+    }
+
+    #enable-midi {
+      padding: 5px 10px;
+      font-size: 11px;
+      background-color: #f0f0f0;
+      color: #666;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #enable-midi:hover {
+      background-color: #e0e0e0;
+    }
+
+    #midi-status {
+      font-size: 10px;
+      color: #888;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #ccc;
+    }
+
+    .status-dot.active { background-color: #4CAF50; }
+    .status-dot.error { background-color: #f44336; }
+
+    /* Logo and Header */
+    svg {
+      width: 100px;
+      height: 100px;
+      display: block;
+      margin: 10px auto;
+    }
+
+    h1 {
+      margin: 0 0 20px 0;
+      font-size: 24px;
+      color: #333;
+    }
+
+    .keyboard {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      max-width: 950px;
+      margin: 0 auto;
+      flex-wrap: nowrap;
+      background: #333;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .key {
+      flex: 1 1 0;
+      min-width: 0;
+      height: 300px;
+      margin: 2px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding-bottom: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 0 0 6px 6px;
+      box-shadow: 0 4px 2px rgba(0, 0, 0, 0.2);
+      color: #333;
+      background-color: white;
+      user-select: none;
+      touch-action: manipulation;
+      transition: all 0.1s;
+      position: relative;
+    }
+
+    .key .kb-hint {
+      position: absolute;
+      top: 10px;
+      font-size: 12px;
+      color: #999;
+      background: #eee;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+
+    .key.sharp {
+      background-color: #222;
+      color: white;
+      height: 180px;
+      z-index: 2;
+      margin-left: -1.5%;
+      margin-right: -1.5%;
+      flex: 0.7 1 0;
+    }
+    
+    .key.sharp .kb-hint {
+      color: #666;
+      background: #444;
+    }
+
+    .key.active {
+      background-color: #ddd;
+      transform: translateY(2px);
+      box-shadow: 0 2px 1px rgba(0,0,0,0.2);
+    }
+    
+    .key.sharp.active {
+      background-color: #555; 
+    }
+
+    textarea {
+      width: 100%;
+      max-width: 950px;
+      height: 120px;
+      margin: 20px auto 0;
+      background-color: white;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      color: #333;
+      font-size: 16px;
+      padding: 15px;
+      display: block;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+
+    .main-controls {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    select {
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: white;
+      cursor: pointer;
+    }
+
+    footer {
+      padding: 20px;
+      border-top: 1px solid #CCC;
+      margin-top: 40px;
+    }
+
+    footer p {
+      margin: 5px 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    footer a {
+      color: #9C27B0;
+      text-decoration: none;
+    }
+
+    @media (max-width: 700px) {
+      .key { height: 200px; font-size: 12px; }
+      .key.sharp { height: 120px; }
+      .midi-config { position: static; align-items: center; margin-bottom: 10px; }
+    }
   </style>
 </head>
 <body>
-  <h1>Mkey by Rene</h1>
-<!-- Music keys and textarea -->
-<div class="keyboard">
-  <div class="key" data-note="C">C<br>ド</div>
-  <div class="key sharp" data-note="C#">C#<br>ド♯</div>
-  <div class="key" data-note="D">D<br>レ</div>
-  <div class="key sharp" data-note="D#">D#<br>レ♯</div>
-  <div class="key" data-note="E">E<br>ミ</div>
-  <div class="key" data-note="F">F<br>ファ</div>
-  <div class="key sharp" data-note="F#">F#<br><span style="font-size: 18px;">ファ♯</span></div>
-  <div class="key" data-note="G">G<br>ソ</div>
-  <div class="key sharp" data-note="G#">G#<br>ソ♯</div>
-  <div class="key" data-note="A">A<br>ラ</div>
-  <div class="key sharp" data-note="A#">A#<br>ラ♯</div>
-  <div class="key" data-note="B">B<br>シ</div>
-</div>
+  <!-- Small MIDI Config (Unobtrusive) -->
+  <div class="midi-config">
+    <div id="midi-status">
+      <span id="status-dot" class="status-dot"></span>
+      <span id="status-text">MIDI Ready</span>
+    </div>
+    <button id="enable-midi">Setup MIDI</button>
+  </div>
 
-  <textarea id="output"></textarea>
+  <svg viewBox="0 0 100 100">
+    <path d="M10,10 L40,40 L90,10 L70,50 L40,30 L10,50 Z" fill="#9C27B0" />
+  </svg>
+
+  <h1>Mkey</h1>
+
+  <div class="main-controls">
+    <select id="oscillator-type" title="波形選択"></select>
+    <select id="symbol-type" title="記号選択"></select>
+  </div>
+
+  <div class="keyboard">
+    <div class="key" data-note="C" data-index="0"><span class="kb-hint">A</span><div>C</div><div>ド</div></div>
+    <div class="key sharp" data-note="C#" data-index="1"><span class="kb-hint">W</span><div>C#</div><div>ド♯</div></div>
+    <div class="key" data-note="D" data-index="2"><span class="kb-hint">S</span><div>D</div><div>レ</div></div>
+    <div class="key sharp" data-note="D#" data-index="3"><span class="kb-hint">E</span><div>D#</div><div>レ♯</div></div>
+    <div class="key" data-note="E" data-index="4"><span class="kb-hint">D</span><div>E</div><div>ミ</div></div>
+    <div class="key" data-note="F" data-index="5"><span class="kb-hint">F</span><div>F</div><div>ファ</div></div>
+    <div class="key sharp" data-note="F#" data-index="6"><span class="kb-hint">T</span><div>F#</div><div style="font-size: 0.8em;">ファ♯</div></div>
+    <div class="key" data-note="G" data-index="7"><span class="kb-hint">G</span><div>G</div><div>ソ</div></div>
+    <div class="key sharp" data-note="G#" data-index="8"><span class="kb-hint">Y</span><div>G#</div><div>ソ♯</div></div>
+    <div class="key" data-note="A" data-index="9"><span class="kb-hint">H</span><div>A</div><div>ラ</div></div>
+    <div class="key sharp" data-note="A#" data-index="10"><span class="kb-hint">U</span><div>A#</div><div>ラ♯</div></div>
+    <div class="key" data-note="B" data-index="11"><span class="kb-hint">J</span><div>B</div><div>シ</div></div>
+  </div>
+
+  <textarea id="output" placeholder="Notes will appear here..."></textarea>
+
+  <footer>
+    <p>Created by Rene & ChatGPT</p>
+    <p><a href="https://dic.nicovideo.jp/u/47846566" target="_blank">Nicopedia</a></p>
+  </footer>
+
 <script>
 const notes = {
-C: 261.63,
-"C#": 277.18,
-D: 293.66,
-"D#": 311.13,
-E: 329.63,
-F: 349.23,
-"F#": 369.99,
-G: 392.00,
-"G#": 415.30,
-A: 440.00,
-"A#": 466.16,
-B: 493.88
+  C: 261.63, "C#": 277.18, D: 293.66, "D#": 311.13, E: 329.63, F: 349.23,
+  "F#": 369.99, G: 392.00, "G#": 415.30, A: 440.00, "A#": 466.16, B: 493.88
 };
 
-const oscillatorTypes = ['triangle', 'sine', 'square', 'sawtooth'];
+const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const KEY_MAP = { 'a': 'C', 'w': 'C#', 's': 'D', 'e': 'D#', 'd': 'E', 'f': 'F', 't': 'F#', 'g': 'G', 'y': 'G#', 'h': 'A', 'u': 'A#', 'j': 'B' };
+
+const oscillatorOptions = [
+  { label: 'Triangle', value: 'triangle' },
+  { label: 'Sine', value: 'sine' },
+  { label: 'Square (50%)', value: 'square' },
+  { label: 'Square (25%)', value: 'square25' },
+  { label: 'Square (12.5%)', value: 'square12' },
+  { label: 'Sawtooth', value: 'sawtooth' }
+];
+
 const symbolTypes = ['#', '+', '-'];
 
-// Add a select box for selecting the oscillator type
-const select = document.createElement("select");
-select.id = "oscillator-type";
-
-oscillatorTypes.forEach(type => {
-const option = document.createElement('option');
-option.value = type;
-option.innerHTML = type;
-select.appendChild(option);
+const oscSelect = document.getElementById("oscillator-type");
+oscillatorOptions.forEach(opt => {
+  const option = document.createElement('option');
+  option.value = opt.value;
+  option.innerHTML = opt.label;
+  oscSelect.appendChild(option);
 });
 
-document.body.appendChild(select);
-
-// Add a select box for selecting the symbol type
-const selectSymbol = document.createElement("select");
-selectSymbol.id = "symbol-type";
-
+const symSelect = document.getElementById("symbol-type");
 symbolTypes.forEach(type => {
-const option = document.createElement('option');
-option.value = type;
-option.innerHTML = type;
-selectSymbol.appendChild(option);
+  const option = document.createElement('option');
+  option.value = type;
+  option.innerHTML = type;
+  symSelect.appendChild(option);
 });
 
-document.body.appendChild(selectSymbol);
+// --- Audio ---
+let audioCtx;
+const periodicWaveCache = new Map();
 
-// Get all music keys and the output textarea
+function initAudioContext() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function getPulseWave(context, dutyCycle) {
+  const cacheKey = `pulse-${dutyCycle}`;
+  if (periodicWaveCache.has(cacheKey)) return periodicWaveCache.get(cacheKey);
+  const numTerms = 4096;
+  const real = new Float32Array(numTerms);
+  const imag = new Float32Array(numTerms);
+  for (let n = 1; n < numTerms; n++) {
+    imag[n] = (2 / (n * Math.PI)) * Math.sin(n * Math.PI * dutyCycle);
+  }
+  const wave = context.createPeriodicWave(real, imag);
+  periodicWaveCache.set(cacheKey, wave);
+  return wave;
+}
+
 const keys = document.querySelectorAll(".key");
 const output = document.getElementById("output");
+const activeOscillators = new Map();
 
-// Add click event listener
+function appendToOutput(noteName) {
+  const symbol = symSelect.value;
+  let baseNote = noteName.replace("#", ""); 
+  let isSharp = noteName.includes("#");
+
+  if (isSharp) {
+    if (symbol === "-") {
+      const noteTable = { C: "D", "C#": "D", D: "E", "D#": "E", E: "F", F: "G", "F#": "G", G: "A", "G#": "A", A: "B", "A#": "B", B: "C" };
+      output.value += (noteTable[baseNote] || baseNote) + symbol + " ";
+    } else {
+      output.value += baseNote + symbol + " ";
+    }
+  } else {
+    output.value += baseNote + " ";
+  }
+  output.scrollTop = output.scrollHeight;
+}
+
+function highlightKey(noteNameOrIndex, isActive) {
+  const keyElement = (typeof noteNameOrIndex === 'string') 
+    ? document.querySelector(`.key[data-note="${noteNameOrIndex}"]`)
+    : document.querySelector(`.key[data-index="${noteNameOrIndex}"]`);
+  if (keyElement) {
+    if (isActive) keyElement.classList.add('active');
+    else keyElement.classList.remove('active');
+  }
+}
+
+function playTone(identifier, frequency, velocity = 1.0) {
+  initAudioContext();
+  stopTone(identifier);
+  const osc = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
+  const type = oscSelect.value;
+  if (type === 'square12') osc.setPeriodicWave(getPulseWave(audioCtx, 0.125));
+  else if (type === 'square25') osc.setPeriodicWave(getPulseWave(audioCtx, 0.25));
+  else osc.type = type;
+  osc.frequency.value = frequency;
+  gainNode.gain.setValueAtTime(0.4 * velocity, audioCtx.currentTime);
+  osc.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+  osc.start();
+  activeOscillators.set(identifier, { osc, gainNode });
+}
+
+function stopTone(identifier) {
+  if (activeOscillators.has(identifier)) {
+    const { osc, gainNode } = activeOscillators.get(identifier);
+    try {
+        const now = audioCtx.currentTime;
+        gainNode.gain.cancelScheduledValues(now);
+        gainNode.gain.setValueAtTime(gainNode.gain.value, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        osc.stop(now + 0.05);
+    } catch(e) { osc.stop(); }
+    activeOscillators.delete(identifier);
+  }
+}
+
+// Events
 keys.forEach(key => {
-let oscillator;
+  const note = key.getAttribute("data-note");
+  const start = (e) => {
+    if (e.type === 'touchstart') e.preventDefault();
+    playTone(note, notes[note], 1.0);
+    appendToOutput(note);
+    highlightKey(note, true);
+  };
+  const stop = () => { stopTone(note); highlightKey(note, false); };
+  key.addEventListener("mousedown", start);
+  key.addEventListener("touchstart", start, {passive: false});
+  key.addEventListener("mouseup", stop);
+  key.addEventListener("mouseleave", stop);
+  key.addEventListener("touchend", stop);
+});
 
-key.addEventListener("pointerdown", () => {
-// Get the data-note attribute value
-const note = key.getAttribute("data-note");
-// Get the selected oscillator type
-const type = document.getElementById("oscillator-type").value;
-// Get the selected symbol type
-const symbol = document.getElementById("symbol-type").value;
-// Create an audio context and oscillator
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-oscillator = audioCtx.createOscillator();
-// Set the type and frequency of the oscillator
-oscillator.type = type;
-oscillator.frequency.value = notes[note];
-// Connect the oscillator to the audio context destination
-oscillator.connect(audioCtx.destination);
-// Start the oscillator and play the note
-oscillator.start();
-key.classList.add("active");
+const pressedKeys = new Set();
+window.addEventListener('keydown', (e) => {
+    const k = e.key.toLowerCase();
+    if (KEY_MAP[k] && !pressedKeys.has(k)) {
+        pressedKeys.add(k);
+        playTone(KEY_MAP[k], notes[KEY_MAP[k]], 1.0);
+        appendToOutput(KEY_MAP[k]);
+        highlightKey(KEY_MAP[k], true);
+    }
+});
+window.addEventListener('keyup', (e) => {
+    const k = e.key.toLowerCase();
+    if (KEY_MAP[k]) {
+        pressedKeys.delete(k);
+        stopTone(KEY_MAP[k]);
+        highlightKey(KEY_MAP[k], false);
+    }
+});
 
-// Check if the note has a sharp or flat and add the selected symbol
-// Remove any existing sharp or flat symbols from the note
-const cleanedNote = note.replace("#", "").replace("+", "").replace("-", "");
-if (note.includes("#") || note.includes("+")) {
-// If selected symbol is "-" and note has a sharp or flat,
-// convert the sharp or flat to a flat by going down a half step
-if (symbol === "-") {
-const noteTable = {
-C: "D",
-D: "E",
-E: "F",
-F: "G",
-G: "A",
-A: "B",
-B: "C"
-};
-output.value += noteTable[cleanedNote] + symbol + " ";
-} else {
-output.value += cleanedNote + symbol + " ";
+// --- MIDI ---
+const statusText = document.getElementById('status-text');
+const statusDot = document.getElementById('status-dot');
+const enableMidiBtn = document.getElementById('enable-midi');
+
+enableMidiBtn.addEventListener('click', () => {
+  initAudioContext();
+  if (navigator.requestMIDIAccess) {
+    statusText.innerText = "Requesting...";
+    try {
+        navigator.requestMIDIAccess({ sysex: false }).then(onMIDISuccess).catch(onMIDIFailure);
+    } catch (err) { onMIDIFailure(err); }
+  } else {
+    statusText.innerText = "No MIDI Support";
+  }
+});
+
+function onMIDISuccess(midiAccess) {
+  statusText.innerText = "MIDI Active";
+  statusDot.classList.add('active');
+  const update = () => {
+    const inputs = midiAccess.inputs.values();
+    let found = false;
+    for (let input of inputs) {
+      input.onmidimessage = onMIDIMessage;
+      statusText.innerText = input.name;
+      found = true;
+    }
+    if(!found) statusText.innerText = "No Device";
+  };
+  update();
+  midiAccess.onstatechange = update;
 }
-} else {
-output.value += cleanedNote + " ";
+
+function onMIDIFailure(error) {
+  statusText.innerText = "Blocked/Error";
+  statusDot.classList.add('error');
 }
-});
 
-key.addEventListener("pointerup", () => {
-oscillator.stop();
-key.classList.remove("active");
-});
-
-key.addEventListener('pointerleave', function() {
-oscillator.stop();
-key.classList.remove("active");
-});
-});
+function midiToFreq(n) { return 440 * Math.pow(2, (n - 69) / 12); }
+function onMIDIMessage(m) {
+  const cmd = m.data[0] & 0xF0;
+  const n = m.data[1];
+  const v = (m.data.length > 2) ? m.data[2] : 0;
+  if (cmd === 0x90 && v > 0) {
+    playTone(n, midiToFreq(n), v / 127);
+    highlightKey(n % 12, true);
+    appendToOutput(NOTE_NAMES[n % 12]);
+  } else if (cmd === 0x80 || (cmd === 0x90 && v === 0)) {
+    stopTone(n);
+    highlightKey(n % 12, false);
+  }
+}
 </script>
 </body>
-<footer>
-  <p>Copyright 2022 Mkey</p>
-  <p>Created by ChatGPT & Rene</p>
-  <p>Website: <a href="https://dic.nicovideo.jp/u/47846566">Nicopedia</a></p>
-  <p><!--Terms of Service | Privacy Policy--></p>
-</footer>
 </html>
